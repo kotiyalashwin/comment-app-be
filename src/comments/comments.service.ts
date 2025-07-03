@@ -72,4 +72,58 @@ export class CommentsService {
 
     return { message: 'Comment updated' };
   }
+
+  //soft delete
+  async deleteComment(id: string, userId: string) {
+    const comment = await this.prisma.comment.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!comment) throw new NotFoundException('Comment not found');
+    const now = new Date();
+    const createdAt = new Date(comment.createdAt);
+
+    const diffTime = (now.getTime() - createdAt.getTime()) / 60000;
+    if (diffTime > 15) throw new ForbiddenException('Delete window expired');
+
+    await this.prisma.comment.update({
+      where: { id, userId },
+      data: {
+        isDeleted: true,
+        deletedAt: now,
+      },
+    });
+
+    return { message: 'Comment deleted successfully' };
+  }
+
+  async restoreComment(id: string, userId: string) {
+    const comment = await this.prisma.comment.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    if (!comment || !comment.deletedAt)
+      throw new NotFoundException('Comment not deleted');
+    const now = new Date();
+    const deletedAt = new Date(comment.deletedAt);
+
+    const diffTime = (now.getTime() - deletedAt.getTime()) / 60000;
+    if (diffTime > 15) throw new ForbiddenException('Delete window expired');
+
+    await this.prisma.comment.update({
+      where: { id, userId },
+      data: {
+        isDeleted: false,
+        deletedAt: null,
+      },
+    });
+
+    return { message: 'Comment restored successfully' };
+  }
 }

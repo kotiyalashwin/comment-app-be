@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -39,5 +40,19 @@ export class CommentsController {
   ) {
     const userId = req.user.sub;
     return this.commentService.editComment(id, comment, userId);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  deleteComment(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user.sub;
+    return this.commentService.deleteComment(id, userId);
+  }
+
+  @Post(':id')
+  @UseGuards(AuthGuard)
+  restoreComment(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user.sub;
+    return this.commentService.restoreComment(id, userId);
   }
 }
