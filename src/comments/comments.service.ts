@@ -11,13 +11,34 @@ export class CommentsService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, comment: NewCommentDTO) {
-    return this.prisma.comment.create({
+    await this.prisma.comment.create({
       data: {
         content: comment.content,
         parentId: comment.parentId || null,
         userId,
       },
     });
+
+    if (comment.parentId) {
+      //where comment
+      const parent = await this.prisma.comment.findUnique({
+        where: { id: comment.parentId },
+      });
+
+      //is the commenter same as uploader
+      if (parent && parent.userId !== userId) {
+        //notify the parentComment uploader
+        await this.prisma.notification.create({
+          data: {
+            message: 'New reply to your comment',
+            userId: parent.userId,
+            commentId: parent.id,
+          },
+        });
+      }
+    }
+
+    return comment;
   }
 
   async getCommentById(id: string) {
