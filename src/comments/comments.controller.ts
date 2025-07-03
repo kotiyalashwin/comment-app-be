@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -27,5 +28,16 @@ export class CommentsController {
   @Get(':id')
   getComment(@Param('id') id: string) {
     return this.commentService.getCommentById(id);
+  }
+
+  @Patch(':id')
+  @UseGuards(AuthGuard)
+  updateComment(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Body() comment: NewCommentDTO,
+  ) {
+    const userId = req.user.sub;
+    return this.commentService.editComment(id, comment, userId);
   }
 }
