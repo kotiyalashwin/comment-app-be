@@ -11,56 +11,55 @@ You have **two options** to run this backend:
 
 ## Option 1: Local Development Setup (Manual)
 
-> 🛠 Recommended if you're actively developing and want hot-reload.
 
 ### 1. Clone the Repository
 
-\`\`\`bash
+\`\`
 git clone https://github.com/YOUR_USERNAME/comment-app.git
 cd comment-app
-\`\`\`
+\`\`
 
 ### 2. Install Dependencies
 
-\`\`\`bash
+\`\`
 npm install
-\`\`\`
+\`\`
 
 ### 3. Create a \`.env\` file
 
-\`\`\`bash
+\`\`
 cp .env.example .env
-\`\`\`
+\`\`
 
 Update your \`.env\` with the correct PostgreSQL connection string:
 
-\`\`\`
+\`\`
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/comments
 JWT_SECRET=your_jwt_secret
-\`\`\`
+\`\`
 
 ### 4. Run PostgreSQL Locally (Manual)
 
-\`\`\`bash
+\`\`
 docker run --name comments-db \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
   -e POSTGRES_DB=comments \
   -p 5432:5432 \
   -d postgres:15
-\`\`\`
+\`\`
 
 ### 5. Run Prisma Migrations
 
-\`\`\`bash
+\`\`
 npx prisma migrate deploy
-\`\`\`
+\`\`
 
 ### 6. Start the App
 
-\`\`\`bash
+\`\`
 npm run start:dev
-\`\`\`
+\`\`
 
 The backend will now be running at: http://localhost:3000
 
@@ -68,28 +67,27 @@ The backend will now be running at: http://localhost:3000
 
 ## Option 2: Dockerized Setup 🐳
 
-> 🐳 Best for quick testing, consistent environments, or deployment.
 
 ### 1. Clone the Repository
 
-\`\`\`bash
+\`\`
 git clone https://github.com/YOUR_USERNAME/comment-app.git
 cd comment-app
-\`\`\`
+\`\`
 
 ### 2. Create a \`.env\` file
 
-\`\`\`bash
+\`\`
 cp .env.example .env
-\`\`\`
+\`\`
 
 Update values if needed.
 
 ### 3. Build and Run the Containers
 
-\`\`\`bash
+\`\`
 docker compose up --build
-\`\`\`
+\`\`
 
 ### 4. Test
 
