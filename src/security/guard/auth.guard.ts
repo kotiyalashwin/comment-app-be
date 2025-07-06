@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,16 +14,19 @@ export class AuthGuard implements CanActivate {
   //from CanActivate interface
   canActivate(context: ExecutionContext): boolean {
     //convert request to express HTTP request
-    const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers['authorization'];
-    console.log(authHeader);
+    const request = context.switchToHttp().getRequest<Request>();
 
-    // Check if the header exists and starts with "Bearer "
-    if (!authHeader?.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Token not found');
+    let token = request.cookies?.token;
+
+    if (!token) {
+      const authHeader = request.headers['authorization'];
+      console.log(authHeader);
+      // Check if the header exists and starts with "Bearer "
+      if (!authHeader?.startsWith('Bearer ')) {
+        throw new UnauthorizedException('Token not found');
+      }
+      const token = authHeader.split(' ')[1]; // Get the token part only
     }
-
-    const token = authHeader.split(' ')[1]; // Get the token part only
 
     try {
       const decoded = this.jwt.verify(token); // Check if token is valid
